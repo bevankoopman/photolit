@@ -1,9 +1,17 @@
 import os
+from fileinput import filename
+
 import streamlit as st
+import json
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
+from google.oauth2.service_account import Credentials
+from io import BytesIO
 
 title = "Chapel Hill State School Year 6 Graduation Photos 🎓"
 st.set_page_config(page_title=title, layout="wide")
 st.title(title)
+st.write("Upload photos of your child for the Year 6 Graduation slideshow. Please upload between 2 to 5 photos in JPG, PNG, or PDF format.")
 
 # # Create API client.
 # credentials = service_account.Credentials.from_service_account_info(
@@ -11,10 +19,23 @@ st.title(title)
 # )
 # client = bigquery.Client(credentials=credentials)
 
-project_id = 'guidestream'
+service_account_info = json.loads(os.environ['GOOGLE_SERVICE_ACCOUNT_JSON'])
+
+# Create credentials from the JSON info
+credentials = Credentials.from_service_account_info(
+    service_account_info,
+    scopes=['https://www.googleapis.com/auth/drive']
+)
+
+# Authenticate PyDrive2 with these credentials
+gauth = GoogleAuth()
+gauth.credentials = credentials
+drive = GoogleDrive(gauth)
+gdrive_folder_id = '1NaihJmtlAqzGkVQgPZDj89KzeHt_o4lN'
+
 
 col1, col2 = st.columns(2)
-with col1.form("experiment_form"):
+with col1.form("form"):
 
     name = st.text_input("Child's full name")
     uploaded_files = st.file_uploader(
@@ -35,8 +56,9 @@ with col1.form("experiment_form"):
             columns = st.columns(len(uploaded_files))
             for i, uploaded_file in enumerate(uploaded_files):
                 bytes_data = uploaded_file.read()
+                filename = f"{name.replace(' ', '_')}_{i}_{uploaded_file.type.replace('/', '.')}"
+                gfile = drive.CreateFile({'parents': [{'id': gdrive_folder_id}], 'title': filename})
+                gfile.content = BytesIO(bytes_data)
+                gfile.Upload()
                 columns[i].image(bytes_data, width=300)
-
-                with open(f"uploaded/{name.replace(" ", "_")}_{i}_{uploaded_file.type.replace("/", ".")}", 'wb') as f:
-                    f.write(bytes_data)
             st.success(f'Successfully uploaded {len(uploaded_files)} photos.', icon="✅")

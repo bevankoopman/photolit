@@ -7,7 +7,8 @@ from io import BytesIO
 title = "Chapel Hill State School Year 6 Graduation Photos 🎓"
 st.set_page_config(page_title=title, layout="wide")
 st.title(title)
-st.write("Upload photos of your child for the Year 6 Graduation slideshow. Please upload between 2 to 5 photos in JPG, PNG, or PDF format.")
+st.write("Upload photos of your child for the Year 6 Graduation slideshow. Please upload between 1 to 5 photos in JPG or PNG format.")
+st.write("Your photos will be securely stored and only used for the graduation ceremony slideshow.")
 
 # Initialize Dropbox client with your access token
 ACCESS_TOKEN = os.environ.get("DROPBOX_ACCESS_TOKEN")  # safer to store in env vars
@@ -19,7 +20,7 @@ with col1.form("form"):
 
     name = st.text_input("Child's full name")
     uploaded_files = st.file_uploader(
-        "Upload 2-5 photos", accept_multiple_files=True, type=["jpg", "jpeg", "png"]
+        "Upload 1-5 photos", accept_multiple_files=True, type=["jpg", "jpeg", "png"]
     )
 
 

@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 
 title = "Chapel Hill State School Year 6 Graduation Photos 🎓"
@@ -30,10 +31,12 @@ with col1.form("experiment_form"):
         elif len(uploaded_files) > 5:
             st.error("Please upload no more than 5 photos.", icon="⚠️")
         else:
+            os.makedirs("uploaded", exist_ok=True)
             columns = st.columns(len(uploaded_files))
             for i, uploaded_file in enumerate(uploaded_files):
                 bytes_data = uploaded_file.read()
                 columns[i].image(bytes_data, width=300)
+
                 with open(f"uploaded/{name.replace(" ", "_")}_{i}_{uploaded_file.type.replace("/", ".")}", 'wb') as f:
                     f.write(bytes_data)
-            st.success(f'Successfully uploaded {len(uploaded_files)}photos.', icon="✅")
+            st.success(f'Successfully uploaded {len(uploaded_files)} photos.', icon="✅")

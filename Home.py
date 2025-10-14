@@ -3,9 +3,9 @@ from fileinput import filename
 
 import streamlit as st
 import json
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
 from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
 from io import BytesIO
 
 title = "Chapel Hill State School Year 6 Graduation Photos 🎓"
@@ -19,19 +19,18 @@ st.write("Upload photos of your child for the Year 6 Graduation slideshow. Pleas
 # )
 # client = bigquery.Client(credentials=credentials)
 
+# Read service account JSON from environment variable
 service_account_info = json.loads(os.environ['GOOGLE_SERVICE_ACCOUNT_JSON'])
 
-# Create credentials from the JSON info
+# Create credentials
 credentials = Credentials.from_service_account_info(
     service_account_info,
     scopes=['https://www.googleapis.com/auth/drive']
 )
 
-# Authenticate PyDrive2 with these credentials
-gauth = GoogleAuth()
-gauth.credentials = credentials
-drive = GoogleDrive(gauth)
-gdrive_folder_id = '1NaihJmtlAqzGkVQgPZDj89KzeHt_o4lN'
+# Build Drive service
+service = build('drive', 'v3', credentials=credentials)
+gdrive_folder_id = '13VGmL5rBBaiuUb2DqRajoPlEtdCSd2_c'
 
 
 col1, col2 = st.columns(2)
@@ -52,13 +51,17 @@ with col1.form("form"):
         elif len(uploaded_files) > 5:
             st.error("Please upload no more than 5 photos.", icon="⚠️")
         else:
-            os.makedirs("uploaded", exist_ok=True)
             columns = st.columns(len(uploaded_files))
             for i, uploaded_file in enumerate(uploaded_files):
                 bytes_data = uploaded_file.read()
                 filename = f"{name.replace(' ', '_')}_{i}_{uploaded_file.type.replace('/', '.')}"
-                gfile = drive.CreateFile({'parents': [{'id': gdrive_folder_id}], 'title': filename})
-                gfile.content = BytesIO(bytes_data)
-                gfile.Upload()
-                columns[i].image(bytes_data, width=300)
+
+                # file_metadata = {'name': filename, 'parents': gdrive_folder_id}
+                # media = MediaIoBaseUpload(BytesIO(bytes_data), mimetype='application/octet-stream')
+                # uploaded_file = service.files().create(body=file_metadata, media_body=media, fields='id', supportsAllDrives=True).execute()
+
+                with open(filename, 'wb') as destination:
+                    destination.write(bytes_data)
+
+            columns[i].image(bytes_data, width=300)
             st.success(f'Successfully uploaded {len(uploaded_files)} photos.', icon="✅")

@@ -5,7 +5,7 @@ import streamlit as st
 from io import BytesIO
 
 title = "🎓 Chapel Hill State School Year 6 Graduation Photos 🎓"
-st.set_page_config(page_title=title, layout="wide")
+st.set_page_config(page_title=title)
 st.title(title)
 st.write("Upload photos of your child for the Year 6 Graduation slideshow. Please provide 1 to 5 photos in JPG or PNG format.")
 st.write("Your photos will be securely stored and only used for the graduation ceremony slideshow.")
@@ -16,8 +16,7 @@ APP_KEY = os.environ.get("DROPBOX_APP_KEY")
 dbx = dropbox.Dropbox(ACCESS_TOKEN, app_key=APP_KEY)
 
 
-col1, col2 = st.columns(2)
-with col1.form("form"):
+with st.form("form"):
 
     name = st.text_input("Child's full name")
     uploaded_files = st.file_uploader(
@@ -47,4 +46,4 @@ with col1.form("form"):
             progress_bar.empty()
 
             st.success(f'Successfully uploaded {len(uploaded_files)} photos. Thanks!', icon="✅")
-    st.caption("For technical issues, please contact bevan@koopman.id.au.")
+st.caption("For technical issues, please contact bevan@koopman.id.au.")

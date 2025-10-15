@@ -4,10 +4,10 @@ import streamlit as st
 
 from io import BytesIO
 
-title = "Chapel Hill State School Year 6 Graduation Photos 🎓"
+title = "🎓 Chapel Hill State School Year 6 Graduation Photos 🎓"
 st.set_page_config(page_title=title, layout="wide")
 st.title(title)
-st.write("Upload photos of your child for the Year 6 Graduation slideshow. Please upload between 1 to 5 photos in JPG or PNG format.")
+st.write("Upload photos of your child for the Year 6 Graduation slideshow. Please provide 1 to 5 photos in JPG or PNG format.")
 st.write("Your photos will be securely stored and only used for the graduation ceremony slideshow.")
 
 # Initialize Dropbox client with your access token
@@ -46,4 +46,4 @@ with col1.form("form"):
                 columns[i].image(bytes_data, width=300)
             progress_bar.empty()
 
-            st.success(f'Successfully uploaded {len(uploaded_files)} photos.', icon="✅")
+            st.success(f'Successfully uploaded {len(uploaded_files)} photos. Thanks!', icon="✅")

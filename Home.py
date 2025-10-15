@@ -47,3 +47,4 @@ with col1.form("form"):
             progress_bar.empty()
 
             st.success(f'Successfully uploaded {len(uploaded_files)} photos. Thanks!', icon="✅")
+    st.caption("For technical issues, please contact bevan@koopman.id.au.")

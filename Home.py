@@ -12,7 +12,8 @@ st.write("Your photos will be securely stored and only used for the graduation c
 
 # Initialize Dropbox client with your access token
 ACCESS_TOKEN = os.environ.get("DROPBOX_ACCESS_TOKEN")  # safer to store in env vars
-dbx = dropbox.Dropbox(ACCESS_TOKEN, app_key='dutu3or7j61keat')
+APP_KEY = os.environ.get("DROPBOX_APP_KEY")
+dbx = dropbox.Dropbox(ACCESS_TOKEN, app_key=APP_KEY)
 
 
 col1, col2 = st.columns(2)

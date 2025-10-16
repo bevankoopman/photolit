@@ -13,6 +13,11 @@ st.write(
 st.write("Your photos will be securely stored and only used for the graduation ceremony slideshow.")
 
 key_json = os.getenv("GCP_SERVICE_ACCOUNT_KEY")
+
+if key_json is None:
+    st.error("GCP service account key not found. Please contact the administrator.", icon="🚨")
+    st.stop()
+
 key_dict = json.loads(key_json)
 credentials = service_account.Credentials.from_service_account_info(key_dict)
 client = storage.Client(credentials=credentials, project=key_dict["project_id"])

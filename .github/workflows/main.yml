@@ -1,0 +1,12 @@
+    name: Keep Streamlit Apps Alive
+    on:
+      schedule:
+        - cron: '0 6 * * *' # Runs daily at 06:00 UTC
+      workflow_dispatch: # Allows manual triggering
+
+    jobs:
+      ping-apps:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Send request to Photolit
+            run: curl -s -o /dev/null -w "%{http_code}\\n" https://photolit.streamlit.app/

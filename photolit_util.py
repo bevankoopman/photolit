@@ -25,11 +25,11 @@ def list_bucket_files(bucket_name):
 
 
         files_data = [
-            [blob.name, f"{blob.size / 1024:.2f} KB", blob.updated.strftime('%Y-%m-%d %H:%M:%S')]
+            [" ".join(blob.name.split('_')[0:-2]), blob.updated.strftime('%Y-%m-%d %H:%M:%S')]
             for i, blob in enumerate(blobs) if "1_image" in blob.name.strip()
         ]
 
-        headers = ['File Name', 'Size', 'Last Modified']
+        headers = ['File Name', 'Last Modified']
         print(tabulate(files_data, headers=headers, tablefmt='grid'))
         print(f"\nTotal files: {len(blobs)}")
         print(f"Total kids: {len(files_data)} ({len(blobs)/len(files_data):.1f} photos per kid on average)")
@@ -39,25 +39,22 @@ def list_bucket_files(bucket_name):
 
 def sync_files(bucket_name, local_dir):
     """Sync files from bucket to local directory"""
-    try:
 
-        # Create local directory if it doesn't exist
-        os.makedirs(local_dir, exist_ok=True)
+    # Create local directory if it doesn't exist
+    os.makedirs(local_dir, exist_ok=True)
 
-        current_files = os.listdir(local_dir)
+    current_files = os.listdir(local_dir)
 
-        files_to_download = [blob.name for blob in blobs if blob.name not in current_files]
-        print(f"Found {len(files_to_download)} files to download")
+    files_to_download = [blob.name for blob in blobs if blob.name not in current_files]
+    print(f"Found {len(files_to_download)} files to download")
 
-        for files_to_download in tqdm(files_to_download, desc="Syncing files"):
-            blob = bucket.blob(files_to_download)
-            local_path = os.path.join(local_dir, files_to_download)
+    with tqdm(files_to_download) as pbar:
+        for filename in pbar:
+            pbar.set_description(f"Downloading {filename}")
+            blob = bucket.blob(filename)
+            local_path = os.path.join(local_dir, filename)
             blob.download_to_filename(local_path)
-
-
-
-    except Exception as e:
-        print(f"Error: {str(e)}")
+            print(local_path)
 
 def main():
     parser = argparse.ArgumentParser(description='Google Cloud Storage bucket utilities')

@@ -54,7 +54,6 @@ def sync_files(bucket_name, local_dir):
             blob = bucket.blob(filename)
             local_path = os.path.join(local_dir, filename)
             blob.download_to_filename(local_path)
-            print(local_path)
 
 def main():
     parser = argparse.ArgumentParser(description='Google Cloud Storage bucket utilities')
@@ -62,11 +61,11 @@ def main():
     parser.add_argument('--sync', help='Local directory to sync files to')
     args = parser.parse_args()
 
-    list_bucket_files(args.bucket_name)
-
     if args.sync:
         print(f"\nSyncing files to {args.sync}")
         sync_files(args.bucket_name, args.sync)
+
+    list_bucket_files(args.bucket_name)
 
 if __name__ == "__main__":
     main()

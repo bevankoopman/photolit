@@ -10,6 +10,8 @@ st.set_page_config(page_title=title)
 st.title(title)
 st.write(
     "Upload photos of your child for the Year 6 Graduation slideshow. Please provide 1 to 5 photos in JPG or PNG format.")
+st.write(
+    "Uploading again with the same name will replace existing photos.")
 st.write("Your photos will be securely stored and only used for the graduation ceremony slideshow.")
 
 key_json = os.getenv("GCP_SERVICE_ACCOUNT_KEY")
@@ -49,7 +51,11 @@ with st.form("form"):
                 blob.upload_from_string(bytes_data)
                 progress_bar.progress((i + 1) / len(uploaded_files),
                                       text=f"Uploaded {i + 1} of {len(uploaded_files)} photos.")
-                columns[i].image(bytes_data, width=300)
+                try:
+                    columns[i].image(bytes_data, width=300)
+                except Exception as e:
+                    columns[i].write(
+                        f"Uploaded {uploaded_file.name} but preview not available (are you sure this is an image?)")
             progress_bar.empty()
 
             st.success(f'Successfully uploaded {len(uploaded_files)} photos. Thanks!', icon="✅")
